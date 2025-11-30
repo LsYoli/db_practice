@@ -1,0 +1,522 @@
+// Modelo relacional derivado de er-database.pdf y schema.psql
+// Comentarios indican supuestos cuando el MER/DDL no detalla tipos o llaves
+
+Table Country {
+  Name varchar(50) [not null, unique]
+  Code varchar(4) [pk]
+  Capital varchar(50)
+  Province varchar(50)
+  Area decimal
+  Population decimal
+}
+
+Table City {
+  Name varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Population decimal
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+  indexes {
+    (Name, Country, Province) [unique]
+  }
+}
+
+Table Province {
+  Name varchar(50) [not null]
+  Country varchar(4) [not null]
+  Population decimal
+  Area decimal
+  Capital varchar(50)
+  CapProv varchar(50)
+  indexes {
+    (Name, Country) [unique]
+  }
+}
+
+Table Economy {
+  Country varchar(4) [pk]
+  GDP decimal
+  Agriculture decimal
+  Service decimal
+  Industry decimal
+  Inflation decimal
+  Unemployment decimal
+}
+
+Table Population {
+  Country varchar(4) [pk]
+  Population_Growth decimal
+  Infant_Mortality decimal
+}
+
+Table Politics {
+  Country varchar(4) [pk]
+  Independence date
+  WasDependent varchar(50)
+  Dependent varchar(4)
+  Government varchar(120)
+}
+
+Table Religion {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  indexes {
+    (Name, Country) [unique]
+  }
+}
+
+Table EthnicGroup {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  indexes {
+    (Name, Country) [unique]
+  }
+}
+
+Table Language {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  indexes {
+    (Name, Country) [unique]
+  }
+}
+
+Table Sublanguage {
+  Sublang varchar(50) [pk]
+  Suplang varchar(50)
+}
+
+Table Countrypops {
+  Country varchar(4)
+  Year decimal
+  Population decimal
+  indexes {
+    (Country, Year) [unique]
+  }
+}
+
+Table Countryothername {
+  Country varchar(4)
+  othername varchar(50)
+  indexes {
+    (Country, othername) [unique]
+  }
+}
+
+Table Countrylocalname {
+  Country varchar(4) [pk]
+  localname varchar(300)
+}
+
+Table Provpops {
+  Province varchar(50)
+  Country varchar(4)
+  Year decimal
+  Population decimal
+  indexes {
+    (Country, Province, Year) [unique]
+  }
+}
+
+Table Provinceothername {
+  Province varchar(50)
+  Country varchar(4)
+  othername varchar(50)
+  indexes {
+    (Country, Province, othername) [unique]
+  }
+}
+
+Table Provincelocalname {
+  Province varchar(50)
+  Country varchar(4)
+  localname varchar(300)
+  indexes {
+    (Country, Province) [unique]
+  }
+}
+
+Table Citypops {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Year decimal
+  Population decimal
+  indexes {
+    (Country, Province, City, Year) [unique]
+  }
+}
+
+Table Cityothername {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  othername varchar(50)
+  indexes {
+    (Country, Province, City, othername) [unique]
+  }
+}
+
+Table Citylocalname {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  localname varchar(300)
+  indexes {
+    (Country, Province, City) [unique]
+  }
+}
+
+Table Continent {
+  Name varchar(20) [pk]
+  Area decimal(10)
+}
+
+Table borders {
+  Country1 varchar(4)
+  Country2 varchar(4)
+  Length decimal
+  indexes {
+    (Country1, Country2) [unique]
+  }
+}
+
+Table encompasses {
+  Country varchar(4)
+  Continent varchar(20)
+  Percentage decimal
+  indexes {
+    (Country, Continent) [unique]
+  }
+}
+
+Table Organization {
+  Abbreviation varchar(12) [pk]
+  Name varchar(100)
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Established date
+}
+
+Table isMember {
+  Country varchar(4)
+  Organization varchar(12)
+  Type varchar(60) [default: 'member']
+  indexes {
+    (Country, Organization) [unique]
+  }
+}
+
+// Se conserva el tipo compuesto GeoCoord en columnas geográficas
+Table Mountain {
+  Name varchar(50) [pk]
+  Mountains varchar(50)
+  Elevation decimal
+  Type varchar(10)
+  Coordinates GeoCoord
+}
+
+Table Desert {
+  Name varchar(50) [pk]
+  Area decimal
+  Coordinates GeoCoord
+}
+
+Table Island {
+  Name varchar(50) [pk]
+  Islands varchar(50)
+  Area decimal
+  Elevation decimal
+  Type varchar(15)
+  Coordinates GeoCoord
+}
+
+Table Lake {
+  Name varchar(50) [pk]
+  River varchar(50)
+  Area decimal
+  Elevation decimal
+  Depth decimal
+  Height decimal // Asumo que corresponde a presas; no está aclarado
+  Type varchar(12)
+  Coordinates GeoCoord
+}
+
+Table Sea {
+  Name varchar(50) [pk]
+  Area decimal
+  Depth decimal
+}
+
+Table River {
+  Name varchar(50) [pk]
+  River varchar(50)
+  Lake varchar(50)
+  Sea varchar(50)
+  Length decimal
+  Area decimal
+  Source GeoCoord
+  Mountains varchar(50)
+  SourceElevation decimal
+  Estuary GeoCoord
+  EstuaryElevation decimal
+}
+
+Table RiverThrough {
+  River varchar(50)
+  Lake varchar(50)
+  indexes {
+    (River, Lake) [unique]
+  }
+}
+
+Table geo_Mountain {
+  Mountain varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, Mountain) [unique]
+  }
+}
+
+Table geo_Desert {
+  Desert varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, Desert) [unique]
+  }
+}
+
+Table geo_Island {
+  Island varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, Island) [unique]
+  }
+}
+
+Table geo_River {
+  River varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, River) [unique]
+  }
+}
+
+Table geo_Sea {
+  Sea varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, Sea) [unique]
+  }
+}
+
+Table geo_Lake {
+  Lake varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, Lake) [unique]
+  }
+}
+
+Table geo_Source {
+  River varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, River) [unique]
+  }
+}
+
+Table geo_Estuary {
+  River varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  indexes {
+    (Province, Country, River) [unique]
+  }
+}
+
+Table mergesWith {
+  Sea1 varchar(50)
+  Sea2 varchar(50)
+  indexes {
+    (Sea1, Sea2) [unique]
+  }
+}
+
+Table located {
+  City varchar(50)
+  Province varchar(50)
+  Country varchar(4)
+  River varchar(50)
+  Lake varchar(50)
+  Sea varchar(50)
+}
+
+Table locatedOn {
+  City varchar(50)
+  Province varchar(50)
+  Country varchar(4)
+  Island varchar(50)
+  indexes {
+    (City, Province, Country, Island) [unique]
+  }
+}
+
+Table islandIn {
+  Island varchar(50)
+  Sea varchar(50)
+  Lake varchar(50)
+  River varchar(50)
+}
+
+Table MountainOnIsland {
+  Mountain varchar(50)
+  Island varchar(50)
+  indexes {
+    (Mountain, Island) [unique]
+  }
+}
+
+Table LakeOnIsland {
+  Lake varchar(50)
+  Island varchar(50)
+  indexes {
+    (Lake, Island) [unique]
+  }
+}
+
+Table RiverOnIsland {
+  River varchar(50)
+  Island varchar(50)
+  indexes {
+    (River, Island) [unique]
+  }
+}
+
+Table Airport {
+  IATACode varchar(3) [pk]
+  Name varchar(100)
+  Country varchar(4)
+  City varchar(50)
+  Province varchar(50)
+  Island varchar(50)
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+  gmtOffset decimal
+}
+
+// Relaciones
+Ref: Province.Country > Country.Code
+Ref: Country.Capital > City.Name // Suponiendo capital referenciada por nombre de ciudad
+Ref: Country.Province > Province.Name // Supuesto: provincia de la capital
+Ref: City.Country > Country.Code
+Ref: City.Province > Province.Name
+Ref: Province.Capital > City.Name // Supuesto de capital provincial
+Ref: Province.CapProv > Province.Name // Supuesto: provincia de la capital
+Ref: Economy.Country > Country.Code
+Ref: Population.Country > Country.Code
+Ref: Politics.Country > Country.Code
+Ref: Politics.Dependent > Country.Code
+Ref: Religion.Country > Country.Code
+Ref: EthnicGroup.Country > Country.Code
+Ref: Language.Country > Country.Code
+Ref: Sublanguage.Suplang > Language.Name
+Ref: Countrypops.Country > Country.Code
+Ref: Countryothername.Country > Country.Code
+Ref: Countrylocalname.Country > Country.Code
+Ref: Provpops.Country > Country.Code
+Ref: Provpops.Province > Province.Name
+Ref: Provinceothername.Country > Country.Code
+Ref: Provinceothername.Province > Province.Name
+Ref: Provincelocalname.Country > Country.Code
+Ref: Provincelocalname.Province > Province.Name
+Ref: Citypops.Country > Country.Code
+Ref: Citypops.Province > Province.Name
+Ref: Citypops.City > City.Name
+Ref: Cityothername.Country > Country.Code
+Ref: Cityothername.Province > Province.Name
+Ref: Cityothername.City > City.Name
+Ref: Citylocalname.Country > Country.Code
+Ref: Citylocalname.Province > Province.Name
+Ref: Citylocalname.City > City.Name
+Ref: borders.Country1 > Country.Code
+Ref: borders.Country2 > Country.Code
+Ref: encompasses.Country > Country.Code
+Ref: encompasses.Continent > Continent.Name
+Ref: Organization.Country > Country.Code
+Ref: Organization.Province > Province.Name
+Ref: Organization.City > City.Name
+Ref: isMember.Country > Country.Code
+Ref: isMember.Organization > Organization.Abbreviation
+Ref: Mountain.Mountains > Mountain.Name // Asumo autorreferencia para cadenas montañosas
+Ref: Island.Islands > Island.Name // Supuesto de jerarquía
+Ref: Lake.River > River.Name
+Ref: River.River > River.Name
+Ref: River.Lake > Lake.Name
+Ref: River.Sea > Sea.Name
+Ref: RiverThrough.River > River.Name
+Ref: RiverThrough.Lake > Lake.Name
+Ref: geo_Mountain.Country > Country.Code
+Ref: geo_Mountain.Province > Province.Name
+Ref: geo_Mountain.Mountain > Mountain.Name
+Ref: geo_Desert.Country > Country.Code
+Ref: geo_Desert.Province > Province.Name
+Ref: geo_Desert.Desert > Desert.Name
+Ref: geo_Island.Country > Country.Code
+Ref: geo_Island.Province > Province.Name
+Ref: geo_Island.Island > Island.Name
+Ref: geo_River.Country > Country.Code
+Ref: geo_River.Province > Province.Name
+Ref: geo_River.River > River.Name
+Ref: geo_Sea.Country > Country.Code
+Ref: geo_Sea.Province > Province.Name
+Ref: geo_Sea.Sea > Sea.Name
+Ref: geo_Lake.Country > Country.Code
+Ref: geo_Lake.Province > Province.Name
+Ref: geo_Lake.Lake > Lake.Name
+Ref: geo_Source.Country > Country.Code
+Ref: geo_Source.Province > Province.Name
+Ref: geo_Source.River > River.Name
+Ref: geo_Estuary.Country > Country.Code
+Ref: geo_Estuary.Province > Province.Name
+Ref: geo_Estuary.River > River.Name
+Ref: mergesWith.Sea1 > Sea.Name
+Ref: mergesWith.Sea2 > Sea.Name
+Ref: located.City > City.Name
+Ref: located.Province > Province.Name
+Ref: located.Country > Country.Code
+Ref: located.River > River.Name
+Ref: located.Lake > Lake.Name
+Ref: located.Sea > Sea.Name
+Ref: locatedOn.City > City.Name
+Ref: locatedOn.Province > Province.Name
+Ref: locatedOn.Country > Country.Code
+Ref: locatedOn.Island > Island.Name
+Ref: islandIn.Island > Island.Name
+Ref: islandIn.Sea > Sea.Name
+Ref: islandIn.Lake > Lake.Name
+Ref: islandIn.River > River.Name
+Ref: MountainOnIsland.Mountain > Mountain.Name
+Ref: MountainOnIsland.Island > Island.Name
+Ref: LakeOnIsland.Lake > Lake.Name
+Ref: LakeOnIsland.Island > Island.Name
+Ref: RiverOnIsland.River > River.Name
+Ref: RiverOnIsland.Island > Island.Name
+Ref: Airport.Country > Country.Code
+Ref: Airport.City > City.Name
+Ref: Airport.Province > Province.Name
+Ref: Airport.Island > Island.Name
