@@ -1,0 +1,138 @@
+Table Country {
+  Code varchar(4) [pk]
+  Name varchar(50) [not null, unique]
+  Capital varchar(50)
+  Province varchar(50)
+  Area decimal
+  Population decimal
+  Note: 'Checks: Area >= 0; Population >= 0'
+}
+
+Table Language {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  Note: 'CHECK ((Percentage > 0) AND (Percentage <= 100))'
+
+  indexes {
+    (Name, Country) [pk]
+  }
+}
+
+Table EthnicGroup {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  Note: 'CHECK ((Percentage > 0) AND (Percentage <= 100))'
+
+  indexes {
+    (Name, Country) [pk]
+  }
+}
+
+Table Religion {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  Note: 'CHECK ((Percentage > 0) AND (Percentage <= 100))'
+
+  indexes {
+    (Name, Country) [pk]
+  }
+}
+
+Table Encompasses {
+  Country varchar(4)
+  Continent varchar(20)
+  Percentage decimal
+  Note: 'CHECK ((Percentage > 0) AND (Percentage <= 100))'
+
+  indexes {
+    (Country, Continent) [pk]
+  }
+}
+
+Table isMember {
+  Country varchar(4)
+  Organization varchar(12)
+  Type varchar(60) [default: 'member']
+
+  indexes {
+    (Country, Organization) [pk]
+  }
+}
+
+Table Continent {
+  Name varchar(20) [pk]
+  Area decimal(10)
+}
+
+Table Organization {
+  Abbreviation varchar(12) [pk]
+  Name varchar(100) [not null, unique]
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Established date
+}
+
+Table Province {
+  Name varchar(50)
+  Country varchar(4)
+  Population decimal
+  Area decimal
+  Capital varchar(50)
+  CapProv varchar(50)
+
+  indexes {
+    (Name, Country) [pk]
+  }
+
+  Note: 'Checks: Population >= 0; Area >= 0'
+}
+
+Table City {
+  Name varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Population decimal
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+
+  indexes {
+    (Name, Country, Province) [pk]
+  }
+
+  Note: 'Checks: Population >= 0; Latitude between -90 and 90; Longitude between -180 and 180'
+}
+
+Table Airport {
+  IATACode varchar(3) [pk]
+  Name varchar(100)
+  Country varchar(4)
+  City varchar(50)
+  Province varchar(50)
+  Island varchar(50)
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+  gmtOffset decimal
+
+  Note: 'Checks: Latitude between -90 and 90; Longitude between -180 and 180'
+}
+
+Ref: Language.Country > Country.Code
+Ref: EthnicGroup.Country > Country.Code
+Ref: Religion.Country > Country.Code
+Ref: Encompasses.Country > Country.Code
+Ref: Encompasses.Continent > Continent.Name
+Ref: isMember.Country > Country.Code
+Ref: isMember.Organization > Organization.Abbreviation
+Ref: Province.Country > Country.Code
+Ref: City.[Province, Country] > Province.[Name, Country]
+Ref: City.Country > Country.Code
+Ref: Airport.Country > Country.Code
+Ref: Airport.[City, Province, Country] > City.[Name, Province, Country]
+Ref: Organization.Country > Country.Code
+Ref: Organization.[City, Province, Country] > City.[Name, Province, Country]
