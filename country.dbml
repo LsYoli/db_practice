@@ -133,6 +133,6 @@ Ref: Province.Country > Country.Code
 Ref: City.[Province, Country] > Province.[Name, Country]
 Ref: City.Country > Country.Code
 Ref: Airport.Country > Country.Code
-Ref: Airport.[City, Province, Country] > City.[Name, Province, Country]
+Ref: Airport.[City, Country, Province] > City.[Name, Country, Province]
 Ref: Organization.Country > Country.Code
-Ref: Organization.[City, Province, Country] > City.[Name, Province, Country]
+Ref: Organization.[City, Country, Province] > City.[Name, Country, Province]
