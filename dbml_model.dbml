@@ -1,0 +1,206 @@
+// DBML model construido progresivamente.
+
+Table Country {
+  Name varchar(50) [not null, unique]
+  Code varchar(4) [pk]
+  Capital varchar(50)
+  Province varchar(50)
+  Area decimal
+  Population decimal
+  // Area y Population siguen las restricciones de no negatividad del DDL.
+}
+
+Table Continent {
+  Name varchar(20) [pk]
+  Area decimal(10)
+}
+
+Table Province {
+  Name varchar(50) [not null]
+  Country varchar(4) [not null]
+  Population decimal
+  Area decimal
+  Capital varchar(50)
+  CapProv varchar(50)
+  primary key (Name, Country)
+  // Population y Area sujetas a restricciones de no negatividad en el DDL.
+}
+
+Table City {
+  Name varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Population decimal
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+  primary key (Name, Country, Province)
+  // Population no negativa; Latitude en [-90,90]; Longitude en [-180,180] según DDL.
+}
+
+Table Language {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  primary key (Name, Country)
+  // Percentage debe ser >0 y <=100 según DDL.
+}
+
+Table EthnicGroup {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  primary key (Name, Country)
+  // Percentage debe ser >0 y <=100 según DDL.
+}
+
+Table Religion {
+  Country varchar(4)
+  Name varchar(50)
+  Percentage decimal
+  primary key (Name, Country)
+  // Percentage debe ser >0 y <=100 según DDL.
+}
+
+Table encompasses {
+  Country varchar(4) [not null]
+  Continent varchar(20) [not null]
+  Percentage decimal
+  primary key (Country, Continent)
+  // Percentage >0 y <=100 según DDL.
+}
+
+Table Organization {
+  Abbreviation varchar(12) [pk]
+  Name varchar(100) [not null]
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Established date
+  // Name es único según el DDL.
+}
+
+Table isMember {
+  Country varchar(4)
+  Organization varchar(12)
+  Type varchar(60) [default: 'member']
+  primary key (Country, Organization)
+}
+
+Table Airport {
+  IATACode varchar(3) [pk]
+  Name varchar(100)
+  Country varchar(4)
+  City varchar(50)
+  Province varchar(50)
+  Island varchar(50)
+  Latitude decimal
+  Longitude decimal
+  Elevation decimal
+  gmtOffset decimal
+  // Latitude en [-90,90]; Longitude en (-180,180]; conforme al DDL.
+}
+
+Table Sublanguage {
+  Sublang varchar(50) [pk]
+  Suplang varchar(50)
+  // Sin FK explícitas en el DDL; se asume relación jerárquica entre idiomas por nombre.
+}
+
+Table Countrypops {
+  Country varchar(4)
+  Year decimal
+  Population decimal
+  primary key (Country, Year)
+  // Year y Population no negativos según DDL.
+}
+
+Table Countryothername {
+  Country varchar(4)
+  othername varchar(50)
+  primary key (Country, othername)
+}
+
+Table Countrylocalname {
+  Country varchar(4) [pk]
+  localname varchar(300)
+}
+
+Table Provpops {
+  Province varchar(50)
+  Country varchar(4)
+  Year decimal
+  Population decimal
+  primary key (Country, Province, Year)
+  // Year y Population no negativos según DDL.
+}
+
+Table Provinceothername {
+  Province varchar(50)
+  Country varchar(4)
+  othername varchar(50)
+  primary key (Country, Province, othername)
+}
+
+Table Provincelocalname {
+  Province varchar(50)
+  Country varchar(4)
+  localname varchar(300)
+  primary key (Country, Province)
+}
+
+Table Citypops {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  Year decimal
+  Population decimal
+  primary key (Country, Province, City, Year)
+  // Year y Population no negativos según DDL.
+}
+
+Table Cityothername {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  othername varchar(50)
+  primary key (Country, Province, City, othername)
+}
+
+Table Citylocalname {
+  City varchar(50)
+  Country varchar(4)
+  Province varchar(50)
+  localname varchar(300)
+  primary key (Country, Province, City)
+}
+
+Table borders {
+  Country1 varchar(4)
+  Country2 varchar(4)
+  Length decimal
+  primary key (Country1, Country2)
+  // Length > 0 según DDL.
+}
+
+// Relaciones
+Ref: Province.Country > Country.Code
+Ref: City.Country > Country.Code
+Ref: Language.Country > Country.Code
+Ref: EthnicGroup.Country > Country.Code
+Ref: Religion.Country > Country.Code
+Ref: encompasses.Country > Country.Code
+Ref: Organization.Country > Country.Code
+Ref: isMember.Country > Country.Code
+Ref: Airport.Country > Country.Code
+Ref: Countrypops.Country > Country.Code
+Ref: Countryothername.Country > Country.Code
+Ref: Countrylocalname.Country > Country.Code
+Ref: Provpops.Country > Country.Code
+Ref: Provinceothername.Country > Country.Code
+Ref: Provincelocalname.Country > Country.Code
+Ref: Citypops.Country > Country.Code
+Ref: Cityothername.Country > Country.Code
+Ref: Citylocalname.Country > Country.Code
+Ref: borders.Country1 > Country.Code
+Ref: borders.Country2 > Country.Code
